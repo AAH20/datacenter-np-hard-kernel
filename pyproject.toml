@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "datacenter-np-hard-kernel"
+version = "0.1.0"
+description = "Apex NP-Hard Combinatorial Optimization Solvers for Distributed Data Centers, Hyperscale Clouds, and AI Superclusters"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Hyperscale Infrastructure Research Group"}
+]
+keywords = [
+    "datacenter",
+    "cloud",
+    "np-hard",
+    "bin-packing",
+    "gang-scheduling",
+    "traffic-engineering",
+    "all-reduce",
+    "optical-circuit-switch",
+    "erasure-coding",
+    "carbon-aware",
+    "bgp-reroute"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: System :: Distributed Computing",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[project.scripts]
+datacenter-kernel = "datacenter_np_hard_kernel.cli:main"
