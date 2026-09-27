@@ -34,22 +34,42 @@ from .core import (
     VectorBinPackingSolver,
     WanEdge,
     WanNode,
+    AsnPolicy,
+    DisputeWheelResult,
+    A2AFlow,
+    EpePeeringLink,
+    EpeAllocationResult,
+    RouteReflectorResult,
+    EvpnAggregationResult,
+    FlowspecRule,
+    FlowspecVerificationResult,
+    BgpStablePathsSolver,
+    BgpEgressPeerOptimizer,
+    BgpRouteReflectorOptimizer,
+    BgpEvpnRouteAggregator,
+    BgpFlowspecVerifier,
 )
 from .engine import HyperscaleBenchmarkReport, HyperscaleDatacenterEngine
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     # Engine
     "HyperscaleDatacenterEngine",
     "HyperscaleBenchmarkReport",
-    # Solvers
+    # Core Solvers
     "VectorBinPackingSolver",
     "OpticalTrafficEngineeringSolver",
     "CollectiveTopologySolver",
     "PowerThermalScheduler",
     "ErasureCodingHypergraphSolver",
     "BgpFastRerouteSolver",
+    # BGP in Agentic AI & A2A Solvers
+    "BgpStablePathsSolver",
+    "BgpEgressPeerOptimizer",
+    "BgpRouteReflectorOptimizer",
+    "BgpEvpnRouteAggregator",
+    "BgpFlowspecVerifier",
     # Models
     "HostNode",
     "TaskPod",
@@ -68,4 +88,14 @@ __all__ = [
     "ErasureLayoutResult",
     "RouterLink",
     "FastRerouteResult",
+    "AsnPolicy",
+    "DisputeWheelResult",
+    "A2AFlow",
+    "EpePeeringLink",
+    "EpeAllocationResult",
+    "RouteReflectorResult",
+    "EvpnAggregationResult",
+    "FlowspecRule",
+    "FlowspecVerificationResult",
 ]
+

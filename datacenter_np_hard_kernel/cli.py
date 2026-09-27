@@ -43,6 +43,12 @@ def cmd_benchmark_all():
     print(f"   - Fast Reroute Failover Latency : {report.bgp_failover_latency_us:.1f} microseconds")
     print(f"   - Topology Protection Coverage  : {report.bgp_coverage_pct}%")
 
+    print(f"\n7. BGP in Agentic AI & A2A Protocols (EPE, SPP, EVPN, Flowspec):")
+    print(f"   - Dispute Wheels Broken (SPP)   : {'Guaranteed Stable DAG' if report.a2a_dispute_wheel_eliminated else 'Unresolved'}")
+    print(f"   - Multi-Cloud Egress Cost Cut   : -{report.a2a_egress_cost_reduction_pct:.1f}% (${report.a2a_annual_savings_usd:,.2f}/yr saved)")
+    print(f"   - EVPN Switch FIB/TCAM Compact  : -{report.a2a_evpn_compression_ratio_pct:.1f}% active routes")
+    print(f"   - Flowspec Sentinel Contradict  : {report.a2a_flowspec_conflicts_prevented} rule conflicts prevented")
+
     print("-" * 76)
     print(f"⏱️  Total Multi-Solver Pipeline Runtime : {report.total_pipeline_time_ms:.2f} ms (Sub-second)")
     print("=" * 76)

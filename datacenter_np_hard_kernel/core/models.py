@@ -241,3 +241,109 @@ class FastRerouteResult:
     microloop_free_guarantee: bool
     coverage_percentage: float
     failover_latency_us: float
+
+
+# ============================================================================
+# 7. BGP in Agentic AI & A2A Protocols Models
+# ============================================================================
+
+@dataclasses.dataclass
+class AsnPolicy:
+    """Routing policy configuration for an Autonomous System participating in A2A mesh."""
+    asn: int
+    name: str
+    peers: List[int] = dataclasses.field(default_factory=list)
+    providers: List[int] = dataclasses.field(default_factory=list)
+    customers: List[int] = dataclasses.field(default_factory=list)
+    preferred_paths: List[List[int]] = dataclasses.field(default_factory=list)
+
+
+@dataclasses.dataclass
+class DisputeWheelResult:
+    """Outcome of Tarjan SCC analysis and BGP Wedgie elimination."""
+    has_dispute_wheel: bool
+    cycles_detected: List[List[int]]
+    tie_breakers_injected: Dict[int, str]
+    is_stable: bool
+    convergence_steps: int
+
+
+@dataclasses.dataclass
+class A2AFlow:
+    """Agent-to-Agent communication session requiring egress routing."""
+    flow_id: str
+    src_agent: str
+    dst_agent: str
+    src_cloud: str
+    dst_cloud: str
+    volume_gb: float
+    is_latency_critical: bool = False
+    max_latency_ms: float = 50.0
+
+
+@dataclasses.dataclass
+class EpePeeringLink:
+    """BGP Egress Peer Engineering (BGP-EPE) transit or interconnect link."""
+    link_id: str
+    src_asn: int
+    peer_asn: int
+    transit_type: str  # "public_internet", "direct_connect", "equinix_fabric"
+    cost_per_gb: float
+    latency_ms: float
+    capacity_gbps: float
+    srv6_sid: str
+
+
+@dataclasses.dataclass
+class EpeAllocationResult:
+    """Outcome of multi-cloud A2A BGP-EPE unit economics optimization."""
+    allocations: Dict[str, str]  # flow_id -> link_id
+    total_egress_cost_usd: float
+    baseline_internet_cost_usd: float
+    cost_reduction_pct: float
+    annual_savings_usd: float
+    avg_latency_ms: float
+    high_priority_latency_sla_met: bool
+
+
+@dataclasses.dataclass
+class RouteReflectorResult:
+    """Outcome of betweenness-centrality RR placement and deflection checking."""
+    selected_rr_nodes: List[str]
+    client_clusters: Dict[str, List[str]]
+    add_path_count: int
+    deflection_free: bool
+    tcams_saved_pct: float
+
+
+@dataclasses.dataclass
+class EvpnAggregationResult:
+    """Outcome of dynamic prefix compaction preventing switch TCAM/FIB overflow."""
+    original_routes_count: int
+    compacted_prefixes_count: int
+    compression_ratio_pct: float
+    fib_overflow_prevented: bool
+
+
+@dataclasses.dataclass
+class FlowspecRule:
+    """Autonomous Sentinel agent security filtering policy (RFC 8955)."""
+    rule_id: str
+    agent_sentinel_id: str
+    src_prefix: str
+    dst_prefix: str
+    protocol: int                     # 6 for TCP, 17 for UDP
+    dst_port_range: Tuple[int, int]   # e.g., (8000, 9000)
+    action: str                       # "drop", "rate_limit", "redirect_sandbox"
+    priority: int = 100
+
+
+@dataclasses.dataclass
+class FlowspecVerificationResult:
+    """Outcome of geometric multi-dimensional interval tree conflict verification."""
+    is_valid: bool
+    shadowed_rules: List[Tuple[str, str]]
+    contradictions: List[Tuple[str, str]]
+    verified_rules_count: int
+    verification_time_ms: float
+

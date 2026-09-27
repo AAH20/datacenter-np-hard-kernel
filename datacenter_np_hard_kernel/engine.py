@@ -16,6 +16,13 @@ import time
 from typing import Any, Dict, List, Optional
 
 from .core.bgp_microloop_reroute import BgpFastRerouteSolver
+from .core.bgp_a2a_orchestrator import (
+    BgpStablePathsSolver,
+    BgpEgressPeerOptimizer,
+    BgpRouteReflectorOptimizer,
+    BgpEvpnRouteAggregator,
+    BgpFlowspecVerifier,
+)
 from .core.collective_allreduce_topology import CollectiveTopologySolver
 from .core.erasure_coding_hypergraph import ErasureCodingHypergraphSolver
 from .core.models import (
@@ -28,6 +35,10 @@ from .core.models import (
     TrafficDemand,
     WanEdge,
     WanNode,
+    AsnPolicy,
+    A2AFlow,
+    EpePeeringLink,
+    FlowspecRule,
 )
 from .core.optical_traffic_engineering import OpticalTrafficEngineeringSolver
 from .core.power_thermal_scheduler import PowerThermalScheduler
@@ -36,7 +47,7 @@ from .core.vector_bin_packing import VectorBinPackingSolver
 
 @dataclasses.dataclass
 class HyperscaleBenchmarkReport:
-    """Summary of performance metrics and benchmarks across all 6 solvers."""
+    """Summary of performance metrics and benchmarks across all solvers."""
     packing_utilization_pct: float
     packing_solve_time_ms: float
     wan_link_utilization_pct: float
@@ -48,6 +59,12 @@ class HyperscaleBenchmarkReport:
     erasure_repair_bandwidth_saved_pct: float
     bgp_failover_latency_us: float
     bgp_coverage_pct: float
+    # BGP A2A Solvers Metrics
+    a2a_egress_cost_reduction_pct: float
+    a2a_annual_savings_usd: float
+    a2a_dispute_wheel_eliminated: bool
+    a2a_evpn_compression_ratio_pct: float
+    a2a_flowspec_conflicts_prevented: int
     total_pipeline_time_ms: float
 
 
@@ -61,6 +78,12 @@ class HyperscaleDatacenterEngine:
         self.power_scheduler = PowerThermalScheduler()
         self.erasure_solver = ErasureCodingHypergraphSolver()
         self.bgp_solver = BgpFastRerouteSolver()
+        # BGP in Agentic AI & A2A Solvers
+        self.stable_paths_solver = BgpStablePathsSolver()
+        self.epe_optimizer = BgpEgressPeerOptimizer()
+        self.rr_optimizer = BgpRouteReflectorOptimizer()
+        self.evpn_aggregator = BgpEvpnRouteAggregator()
+        self.flowspec_verifier = BgpFlowspecVerifier()
 
     def run_full_benchmark(self) -> HyperscaleBenchmarkReport:
         """Executes a full multi-tier benchmark across all 6 optimization solvers."""
@@ -155,6 +178,38 @@ class HyperscaleDatacenterEngine:
         ]
         bgp_res = self.bgp_solver.solve(routers, links)
 
+        # 7. BGP in Agentic AI & A2A Solvers Benchmark
+        # 7a. Stable Paths (Dispute Wheel elimination)
+        policies = [
+            AsnPolicy(65001, "AS-AWS-Cluster", preferred_paths=[[65001, 65002, 0]]),
+            AsnPolicy(65002, "AS-Azure-Cluster", preferred_paths=[[65002, 65003, 0]]),
+            AsnPolicy(65003, "AS-GCP-Cluster", preferred_paths=[[65003, 65001, 0]]),
+        ]
+        spp_res = self.stable_paths_solver.detect_and_resolve_dispute_wheel(policies)
+
+        # 7b. BGP-EPE Multi-Cloud Unit Economics
+        epe_links = [
+            EpePeeringLink("link_dc", 65001, 16509, "direct_connect", cost_per_gb=0.025, latency_ms=15.0, capacity_gbps=100.0, srv6_sid="fc00:1::1"),
+            EpePeeringLink("link_eqx", 65001, 24115, "equinix_fabric", cost_per_gb=0.003, latency_ms=5.0, capacity_gbps=400.0, srv6_sid="fc00:2::1"),
+            EpePeeringLink("link_pub", 65001, 3356, "public_internet", cost_per_gb=0.080, latency_ms=60.0, capacity_gbps=100.0, srv6_sid="fc00:3::1"),
+        ]
+        flows = [
+            A2AFlow("flow_inference_ttft", "agent_root", "agent_worker_1", "aws_us_east", "azure_eastus2", volume_gb=500.0, is_latency_critical=True, max_latency_ms=20.0),
+            A2AFlow("flow_context_dump", "agent_memory", "agent_rag", "aws_us_east", "coreweave_ord1", volume_gb=50000.0, is_latency_critical=False, max_latency_ms=100.0),
+        ]
+        epe_res = self.epe_optimizer.optimize_egress(flows, epe_links)
+
+        # 7c. EVPN Route Aggregator
+        agent_ips = [f"10.244.{i // 256}.{i % 256}" for i in range(2048)]
+        evpn_res = self.evpn_aggregator.aggregate_routes(agent_ips)
+
+        # 7d. Flowspec Conflict Verifier
+        flowspec_rules = [
+            FlowspecRule("r1", "sentinel_1", "10.0.0.0/16", "192.168.0.0/16", 6, (8000, 9000), "drop", 200),
+            FlowspecRule("r2", "sentinel_2", "10.0.1.0/24", "192.168.1.0/24", 6, (8080, 8080), "rate_limit", 100),
+        ]
+        fs_res = self.flowspec_verifier.verify_rules(flowspec_rules)
+
         total_pipeline_time_ms = (time.perf_counter() - t0) * 1000.0
 
         avg_pack_util = sum(pack_res.node_utilization.values()) / max(1, len(pack_res.node_utilization))
@@ -171,5 +226,11 @@ class HyperscaleDatacenterEngine:
             erasure_repair_bandwidth_saved_pct=lrc_res.repair_io_reduction_pct,
             bgp_failover_latency_us=bgp_res.failover_latency_us,
             bgp_coverage_pct=bgp_res.coverage_percentage,
+            # BGP A2A Solvers Metrics
+            a2a_egress_cost_reduction_pct=epe_res.cost_reduction_pct,
+            a2a_annual_savings_usd=epe_res.annual_savings_usd,
+            a2a_dispute_wheel_eliminated=spp_res.is_stable,
+            a2a_evpn_compression_ratio_pct=evpn_res.compression_ratio_pct,
+            a2a_flowspec_conflicts_prevented=len(fs_res.contradictions),
             total_pipeline_time_ms=round(total_pipeline_time_ms, 2),
         )
